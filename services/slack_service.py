@@ -1,6 +1,7 @@
 import os
 from slack_bolt import App
 from slack_bolt.adapter.fastapi import SlackRequestHandler
+from ..controllers.message_controller import MessageController
 
 # Initialize the Slack app with secrets from the environment
 app = App(
@@ -10,14 +11,14 @@ app = App(
 
 app_handler = SlackRequestHandler(app)
 
-@app.message("")
-def handle_message(message, say):
-    print("test")
-    say(f"Hey hello there <@{message['user']}>!")
+message_controller = MessageController()
 
-@app.command("/echo")
-def repeat_text(ack, respond, command):
-    # Acknowledge command request
-    print(command)
-    ack()
-    respond(f"{command['text']}")
+@app.event("message")
+def handle_message_events(event, say):
+    print(event)
+    user_message = event.get('text')
+    
+    response = message_controller.process_message(user_message)
+
+    # Send response back to Slack
+    say(response)
