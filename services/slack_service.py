@@ -15,7 +15,6 @@ message_controller = MessageController()
 
 @app.event("message")
 def handle_message_events(event, say):
-    print(event)
     user_message = event.get('text')
     
     response = message_controller.process_message(user_message)
