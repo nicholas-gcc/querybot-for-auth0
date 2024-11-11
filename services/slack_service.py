@@ -16,6 +16,9 @@ message_controller = MessageController()
 
 @app.event("message")
 def handle_message_events(event, say):
+    """
+    Processes message event and determines response and optional file upload if needed
+    """
     user_message = event.get('text')
     channel_id = event.get('channel')
     

@@ -6,9 +6,15 @@ class GetUserByIdIntentHandler(BaseIntentHandler):
     INTENT_NAME = GET_USER_BY_ID_INTENT
 
     def can_handle(self, intent_name):
+        """
+        Determines if intent passed to class matches the handler
+        """
         return intent_name == self.INTENT_NAME
 
     def handle_intent(self, parameters, auth0_service):
+        """
+        Liases with Management API to get a response and formats it, determines if file upload needed
+        """
         user_id = parameters[USER_ID_PARAM]
         endpoint = f'users/{user_id}'
 
@@ -28,5 +34,8 @@ class GetUserByIdIntentHandler(BaseIntentHandler):
         return formatted_response, needs_file_upload
 
     def format_response(self, res):
+        """
+        Pretty print JSON response from Auth0
+        """
         formatted_json = json.dumps(res, indent=4)
         return formatted_json

@@ -9,6 +9,9 @@ class IntentHandlerFactory:
         ]
     
     def get_handler(self, intent_name):
+        """
+        Matches handler to intent, instantiates the handler based on intent
+        """
         for handler in self.handlers:
             if handler.can_handle(intent_name):
                 return handler

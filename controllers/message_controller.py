@@ -21,16 +21,27 @@ class MessageController:
 
 
     def process_message(self, message):
-        # 1. Take message from Slack
-        # 2. Send it to Dialogflow service to pick up intent
-        # 3. Get the correct intent handler
-        # 4. Get intent handler to make Auth0 Management API call
+        """
+        1) Takes query from Slack
+        2) Send it to Dialogflow to pick up intent
+        3) Generate the correct intent handler
+        4) Have intent handler to make correct Management API call
+        """
+
+        # Remove markdown formatting coming in from Slack
         sanitized_message = StringUtils().remove_format(message)
 
         # Since we have defined single-turn agents, session can be arbitrary
         dialogflow_session_id = uuid.uuid4()
 
-        detected_intent, fulfillment_text, parameters = self.dialogflow_service.detect_intent_texts(DIALOGFLOW_PROJECT_ID, dialogflow_session_id, sanitized_message, DIALOGFLOW_LANGUAGE_CODE_EN)
+
+        # Detected intent decides IntentHandler, fulfillment text determines initial text, params picked up and passed to IntentHandler
+        detected_intent, fulfillment_text, parameters = self.dialogflow_service.detect_intent_texts(
+            DIALOGFLOW_PROJECT_ID,
+            dialogflow_session_id, 
+            sanitized_message, 
+            DIALOGFLOW_LANGUAGE_CODE_EN
+        )
 
         handler = self.intent_handler_factory.get_handler(detected_intent)
 

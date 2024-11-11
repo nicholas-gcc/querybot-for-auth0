@@ -5,6 +5,9 @@ from google.protobuf.json_format import MessageToDict
 class DialogflowService:
 
     def detect_intent_texts(self, project_id, session_id, text, language_code):
+        """
+        Given text input, return detected intent, fulfillment text defined on ES console and detected parameters
+        """
         session_client = dialogflow.SessionsClient()
         session = session_client.session_path(project_id, session_id)
 
