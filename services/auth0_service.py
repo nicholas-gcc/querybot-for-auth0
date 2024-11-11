@@ -47,6 +47,10 @@ class Auth0Service(metaclass=SingletonMeta):
         self.access_token = None
     
     def get_management_api_token(self):
+        """
+        Uses client ID and secret to make a client credentials flow call to get a Management API token
+        Returns token from existing instance if not expired and it exists
+        """
         if self.access_token and not self.is_token_expired(self.access_token):
             return self.access_token
         else:
@@ -65,6 +69,9 @@ class Auth0Service(metaclass=SingletonMeta):
             return self.access_token
 
     def is_token_expired(self, token):
+        """
+        Decodes payload of token and checks `exp` claim to see if token is expired
+        """
         try:
             # Decode the token without verification to extract the payload
             # Set options={'verify_signature': False} to skip signature verification
@@ -83,3 +90,17 @@ class Auth0Service(metaclass=SingletonMeta):
             return True
         except Exception as e:
             return True
+    
+    def get(self, endpoint_path, query_params=None):
+        """
+        Boilerplate method to make GET Management API requests
+        """
+        token = self.get_management_api_token()
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
+        url = f"https://{self.base_url}/api/v2/{endpoint_path}"
+        response = requests.get(url, headers=headers, params=query_params)
+        print(response)
+        response.raise_for_status()
+        return response.json()
