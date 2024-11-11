@@ -1,4 +1,6 @@
 from google.cloud import dialogflow
+from google.protobuf.json_format import MessageToDict
+
 
 class DialogflowService:
 
@@ -12,8 +14,12 @@ class DialogflowService:
         response = session_client.detect_intent(
             request={"session": session, "query_input": query_input}
         )
+        
+        # from https://stackoverflow.com/questions/71256960/how-to-access-infos-in-protobuf-response-from-dialogflow-api
+        response = MessageToDict(response._pb)
 
-        detected_intent = response.query_result.intent.display_name
-        fulfillment_text = response.query_result.fulfillment_text
+        detected_intent = response["queryResult"]["intent"]["displayName"]
+        fulfillment_text = response["queryResult"]["fulfillmentText"]
+        parameters = response["queryResult"]["parameters"]
 
-        return detected_intent, fulfillment_text
+        return detected_intent, fulfillment_text, parameters

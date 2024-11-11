@@ -83,3 +83,14 @@ class Auth0Service(metaclass=SingletonMeta):
             return True
         except Exception as e:
             return True
+    
+    def get(self, endpoint_path, query_params=None):
+        token = self.get_management_api_token()
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
+        url = f"https://{self.base_url}/api/v2/{endpoint_path}"
+        response = requests.get(url, headers=headers, params=query_params)
+        print(response)
+        response.raise_for_status()
+        return response.json()
