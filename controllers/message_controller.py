@@ -46,18 +46,29 @@ class MessageController:
         handler = self.intent_handler_factory.get_handler(detected_intent)
 
         if handler:
-            payload, needs_file_upload = handler.handle_intent(parameters, self.auth0_service)
+            handler_result = handler.handle_intent(parameters, self.auth0_service)
+
+            # additional_text is for when intent_handler picks up and needs to process 
+            # extra params to make the user message more meaningful 
+            if isinstance(handler_result, tuple) and len(handler_result) == 3:
+                payload, needs_file_upload, additional_text = handler_result
+            else:
+                payload, needs_file_upload = handler_result
+                additional_text = None
+
             response = {
                 'text': fulfillment_text,
                 'payload': payload,
-                'needs_file_upload': needs_file_upload
+                'needs_file_upload': needs_file_upload,
+                'additional_text': additional_text
             }
         else:
             # assume fallback intent is reached
             response = {
                 'text': fulfillment_text,
                 'payload': None,
-                'needs_file_upload': False
+                'needs_file_upload': False,
+                'additional_text': None
             }
 
         return response

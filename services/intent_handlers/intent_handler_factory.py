@@ -1,15 +1,17 @@
 from .get_user_by_id_handler import GetUserByIdIntentHandler
-from .search_user_by_email_handler import SearchUsersByEmailIntent
-from .get_active_users_count_intent import GetActiveUsersCountIntent
-from .get_tenant_settings_intent import GetTenantSettingsIntent
+from .search_user_by_email_handler import SearchUsersByEmailIntentHandler
+from .get_active_users_count_intent_handler import GetActiveUsersCountIntentHandler
+from .get_tenant_settings_intent_handler import GetTenantSettingsIntentHandler
+from .get_stats_intent_handler import GetStatsIntentHandler
 
 class IntentHandlerFactory:
     def __init__(self):
         self.handlers = [
             GetUserByIdIntentHandler(),
-            SearchUsersByEmailIntent(),
-            GetActiveUsersCountIntent(),
-            GetTenantSettingsIntent()
+            SearchUsersByEmailIntentHandler(),
+            GetActiveUsersCountIntentHandler(),
+            GetTenantSettingsIntentHandler(),
+            GetStatsIntentHandler()
         ]
     
     def get_handler(self, intent_name):

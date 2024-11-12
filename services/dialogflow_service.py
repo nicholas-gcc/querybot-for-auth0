@@ -25,4 +25,6 @@ class DialogflowService:
         fulfillment_text = response["queryResult"]["fulfillmentText"]
         parameters = response["queryResult"]["parameters"]
 
+        print(parameters)
+
         return detected_intent, fulfillment_text, parameters

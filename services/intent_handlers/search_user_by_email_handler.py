@@ -2,7 +2,7 @@ import json
 from .base_intent_handler import BaseIntentHandler
 from ...utils.constants import MULTILINE_CODE_DELIMITER, SEARCH_USERS_BY_EMAIL_INTENT, EMAIL_PARAM, NO_DATA_MESSAGE, MAX_MESSAGE_LENGTH
 
-class SearchUsersByEmailIntent(BaseIntentHandler):
+class SearchUsersByEmailIntentHandler(BaseIntentHandler):
     INTENT_NAME = SEARCH_USERS_BY_EMAIL_INTENT
 
     def can_handle(self, intent_name):

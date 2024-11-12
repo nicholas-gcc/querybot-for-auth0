@@ -1,7 +1,7 @@
 from .base_intent_handler import BaseIntentHandler
 from ...utils.constants import GET_ACTIVE_USERS_COUNT_INTENT
 
-class GetActiveUsersCountIntent(BaseIntentHandler):
+class GetActiveUsersCountIntentHandler(BaseIntentHandler):
     INTENT_NAME = GET_ACTIVE_USERS_COUNT_INTENT
 
     def can_handle(self, intent_name):

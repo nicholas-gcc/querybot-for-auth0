@@ -7,9 +7,11 @@ GET_USER_BY_ID_INTENT = "GetUserByIdIntent"
 USER_ID_PARAM = "Auth0-User-ID"
 GET_TENANT_SETTINGS_INTENT = "GetTenantSettingsIntent"
 GET_ACTIVE_USERS_COUNT_INTENT = "GetActiveUsersCountIntent"
+GET_STATS_INTENT = "GetStatsIntent"
 
 SEARCH_USERS_BY_EMAIL_INTENT = "SearchUsersByEmailIntent"
 EMAIL_PARAM = "email"
+DATE_PERIOD_PARAM = "date-period"
 
 # String constants
 MULTILINE_CODE_DELIMITER = "```"

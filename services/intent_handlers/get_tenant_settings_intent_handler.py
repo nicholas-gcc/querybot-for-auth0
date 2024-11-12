@@ -2,7 +2,7 @@ import json
 from .base_intent_handler import BaseIntentHandler
 from ...utils.constants import MULTILINE_CODE_DELIMITER, GET_TENANT_SETTINGS_INTENT, MAX_MESSAGE_LENGTH, NO_DATA_MESSAGE
 
-class GetTenantSettingsIntent(BaseIntentHandler):
+class GetTenantSettingsIntentHandler(BaseIntentHandler):
     INTENT_NAME = GET_TENANT_SETTINGS_INTENT
 
     def can_handle(self, intent_name):
