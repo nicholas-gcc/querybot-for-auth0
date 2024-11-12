@@ -5,6 +5,8 @@ DIALOGFLOW_LANGUAGE_CODE_EN = "en"
 # Dialogflow params and intents
 GET_USER_BY_ID_INTENT = "GetUserByIdIntent"
 USER_ID_PARAM = "Auth0-User-ID"
+GET_TENANT_SETTINGS_INTENT = "GetTenantSettingsIntent"
+GET_ACTIVE_USERS_COUNT_INTENT = "GetActiveUsersCountIntent"
 
 SEARCH_USERS_BY_EMAIL_INTENT = "SearchUsersByEmailIntent"
 EMAIL_PARAM = "email"
