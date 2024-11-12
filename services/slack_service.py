@@ -24,15 +24,20 @@ def handle_message_events(event, say):
     
     response = message_controller.process_message(user_message)
 
+    # Prepare the message text
+    message_text = response['text']
+    if response.get('additional_text'):
+        message_text += f"\n{response['additional_text']}"
+
     # Check if the payload needs to be uploaded as a file
     if response.get('needs_file_upload'):
-        # Send the initial text response
-        say(text=response['text'])
+        # Send the initial text response without the payload
+        say(text=message_text)
 
         try:
             # Upload the payload as a file and share it in the channel
             app.client.files_upload_v2(
-                channels=[channel_id],
+                channel=channel_id,
                 content=response['payload'],
                 filename="response.txt",
                 title="Response"
@@ -40,10 +45,8 @@ def handle_message_events(event, say):
         except SlackApiError as e:
             say(text=f"Failed to upload the file: {e.response['error']}")
     else:
-        # Combine the text and payload
-        combined_message = response['text']
-        if response['payload']:
-            combined_message += f"\n{response['payload']}"
-
+        # Combine the text, additional_text, and payload
+        if response.get('payload'):
+            message_text += f"\n{response['payload']}"
         # Send the combined message
-        say(text=combined_message)
+        say(text=message_text)
