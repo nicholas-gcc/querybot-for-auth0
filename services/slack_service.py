@@ -3,6 +3,7 @@ from slack_bolt import App
 from slack_bolt.adapter.fastapi import SlackRequestHandler
 from slack_sdk.errors import SlackApiError
 from ..controllers.message_controller import MessageController
+from ..utils.constants import HELP_TEXT
 
 # Initialize the Slack app with secrets from the environment
 app = App(
@@ -50,3 +51,8 @@ def handle_message_events(event, say):
             message_text += f"\n{response['payload']}"
         # Send the combined message
         say(text=message_text)
+
+@app.command("/help")
+def handle_help_command(ack, respond, command):
+    ack()
+    respond(HELP_TEXT)
