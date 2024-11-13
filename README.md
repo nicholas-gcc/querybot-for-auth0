@@ -38,30 +38,30 @@ curl -L 'https://<YOUR_TENANT_DOMAIN>.<REGION>.auth0.com/api/v2/tenants/settings
 
 ### Supported queries
 - **Get User Details By ID** (Retrieve user details given an Auth0 user ID)
-  - <em>Usage examples<em>:
+  - <em>Usage examples</em>:
     - "Get user details for user ID `auth0|6724489270033bac7e8e0c0c`"
     - "pls gimme raw json for `samlp|Okta-SAML-SP|nicholas.canete@okta.com`"
       
 - **Get Daily Stats** (Retrieve daily statistics within an optional date range)
-  - <em>Usage examples<em>:
+  - <em>Usage examples</em>:
     - "Get daily stats"
     - "Please retrieve daily stats from Jan 1 to Mar 14"
     - "Show stats for last week"
     - "Retrieve daily statistics since from the past 3 months"
-    - Subtle note on messaging - Dialogflow will resolve `...X weeks ago` resolve to a startDate of X weeks ago, and endDate to X + 1 weeks ago. If you want X weeks ago to present, say `...for the past X weeks`<em>
+    - <em>Subtle note on messaging - Dialogflow will resolve `...X weeks ago` resolve to a startDate of X weeks ago, and endDate to X + 1 weeks ago. If you want X weeks ago to present, say `...for the past X weeks`</em>
     
 - **Get Tenant Settings** (Retrieve your tenant's settings)
-  - <em>Usage examples<em>:
+  - <em>Usage examples</em>:
     - "Show tenant settings"
     - "Display the tenant's configurations"
    
 - **Get Active Users Count** (Get the number of active users in the last 30 days.)
-  - <em>Usage examples<em>:
+  - <em>Usage examples</em>:
     - "How many active users do we have?"
     - "What's our MAU count?"
    
 - **Search User By Email** (Find user details using an email address.)
-  - <em>Usage examples<em>:
+  - <em>Usage examples</em>:
     - "Find user with email nicholasgcc@gmail.com"
     - "Search for user by email jane.doe@company.com."
    
