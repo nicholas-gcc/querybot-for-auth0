@@ -4,7 +4,14 @@ This app allows you to send a query on Slack, using natural language processing 
 
 ## Table of Contents
 
-## Rationale and Goal
+- [Rationale](#rationale)
+- [Features](#features)
+  - [Supported queries](#supported-queries)
+- [Setup](#setup)
+- [Technical Architecture](#technical-architecture)
+- [Roadmap](#roadmap)
+
+## Rationale
 
 - I'm looking to make Auth0 data more accessible to Auth0 customers' non-technical (or even technical) staff and help them get data on the fly
 - For some of our Auth0 customers, there are teams that are non-technical in nature, or seldom use Auth0 primarily but may need data sometimes. There are some obstacles, including but not limited to:
