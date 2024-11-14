@@ -65,6 +65,11 @@ curl -L 'https://<YOUR_TENANT_DOMAIN>.<REGION>.auth0.com/api/v2/tenants/settings
     - "Find user with email nicholasgcc@gmail.com"
     - "Search for user by email jane.doe@company.com."
    
+- **Get Universal Login Page Template** (Retrieves ULP template if it exists, formats it to multiline HTML.)
+  - <em>Usage examples</em>:
+    - "Could you give me my tenant's Universal Login page template?"
+    - "Fetch ULP template"
+   
 ## Setup (running your own local instance)
 
 This is a work in progress :)
