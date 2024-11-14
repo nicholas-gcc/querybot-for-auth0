@@ -3,6 +3,7 @@ from .search_user_by_email_handler import SearchUsersByEmailIntentHandler
 from .get_active_users_count_intent_handler import GetActiveUsersCountIntentHandler
 from .get_tenant_settings_intent_handler import GetTenantSettingsIntentHandler
 from .get_stats_intent_handler import GetStatsIntentHandler
+from .get_ulp_template_intent_handler import GetULPTemplateIntentHandler
 
 class IntentHandlerFactory:
     def __init__(self):
@@ -11,7 +12,8 @@ class IntentHandlerFactory:
             SearchUsersByEmailIntentHandler(),
             GetActiveUsersCountIntentHandler(),
             GetTenantSettingsIntentHandler(),
-            GetStatsIntentHandler()
+            GetStatsIntentHandler(),
+            GetULPTemplateIntentHandler()
         ]
     
     def get_handler(self, intent_name):
