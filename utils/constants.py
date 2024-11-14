@@ -8,6 +8,7 @@ USER_ID_PARAM = "Auth0-User-ID"
 GET_TENANT_SETTINGS_INTENT = "GetTenantSettingsIntent"
 GET_ACTIVE_USERS_COUNT_INTENT = "GetActiveUsersCountIntent"
 GET_STATS_INTENT = "GetStatsIntent"
+GET_ULP_TEMPLATE_INTENT = "GetULPTemplateIntent"
 
 SEARCH_USERS_BY_EMAIL_INTENT = "SearchUsersByEmailIntent"
 EMAIL_PARAM = "email"
@@ -16,7 +17,7 @@ DATE_PERIOD_PARAM = "date-period"
 # String constants
 MULTILINE_CODE_DELIMITER = "```"
 NEWLINE_DELIMITER = "\n"
-NO_DATA_MESSAGE = "Unfortunately, we couldn't find any data with that identifier"
+NO_DATA_MESSAGE = "Unfortunately, we couldn't find any data on this."
 
 # Slack constants
 MAX_MESSAGE_LENGTH = 3800 # there's a limit for 4000, reduce a little to account for initial fulfilment text
