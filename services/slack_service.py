@@ -56,3 +56,37 @@ def handle_message_events(event, say):
 def handle_help_command(ack, respond, command):
     ack()
     respond(HELP_TEXT)
+
+@app.command("/authorize")
+def handle_authorize_command(body, ack, client, logger):
+    ack()
+    res = client.views_open(
+        trigger_id=body["trigger_id"],
+        view={
+            "type": "modal",
+            "callback_id": "authorize-modal",
+            "title": {"type": "plain_text", "text": "Auth0 Details"},
+            "submit": {"type": "plain_text", "text": "Submit"},
+            "close": {"type": "plain_text", "text": "Cancel"},
+            "blocks": [
+                {
+                    "type": "input",
+                    "block_id": "base_url",
+                    "element": {"type": "plain_text_input", "action_id": "my_action"},
+                    "label": {"type": "plain_text", "text": "Auth0 Tenant Base URL"},
+                },
+                {
+                    "type": "input",
+                    "block_id": "client_id",
+                    "element": {"type": "plain_text_input", "action_id": "my_action"},
+                    "label": {"type": "plain_text", "text": "Auth0 M2M Client ID"},
+                },
+                {
+                    "type": "input",
+                    "block_id": "client_secret",
+                    "element": {"type": "plain_text_input", "action_id": "my_action"},
+                    "label": {"type": "plain_text", "text": "Auth0 M2M Client Secret"},
+                }
+            ],
+        },
+    )
