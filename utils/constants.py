@@ -62,7 +62,13 @@ Simply send a message to the bot with your query in plain English. This bot uses
    - *Description:* Find user details using an email address.
    - *Usage Example:*
      - `"Find user with email <email>"`
-     - `Search for user by email jane.doe@company.com."`
+     - `"Search for user by email jane.doe@company.com."`
+
+5. *Get Universal Login Page Template*
+   - *Description:* Retrieves ULP template if it exists, formats it to multiline HTML
+   - *Usage Example:*
+     - `"Could you give me my tenant's Universal Login page template?"`
+     - `"Fetch ULP template"`
 
 ---
 
