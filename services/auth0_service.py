@@ -1,106 +1,182 @@
+import logging
+from datetime import datetime, timedelta
+
 import requests
-import jwt
-import time
 
-from threading import Lock, Thread
+from ..dao.m2m_credentials_dao import m2m_credentials_dao
+from ..utils.constants import (
+    AUTH0_API_AUDIENCE_TEMPLATE,
+    AUTH0_API_BASE_URL_TEMPLATE,
+    AUTH0_TOKEN_URL_TEMPLATE,
+    AUTHORIZATION_HEADER_TEMPLATE,
+)
 
-class SingletonMeta(type):
-    """
-    This is a thread-safe implementation of Singleton. 
-    Credits: https://refactoring.guru/design-patterns/singleton/python/example#example-1
-    """
+logger = logging.getLogger(__name__)
 
-    _instances = {}
 
-    _lock: Lock = Lock()
-    """
-    We now have a lock object that will be used to synchronize threads during
-    first access to the Singleton.
-    """
+class Auth0Service:
+    """Service for interacting with the Auth0 Management API."""
 
-    def __call__(cls, *args, **kwargs):
+    def __init__(
+        self,
+        auth0_base_url: str,
+        client_id: str,
+        client_secret: str,
+        slack_user_id: str,
+        access_token: str = None,
+        token_expires_at: str = None,
+    ):
         """
-        Possible changes to the value of the `__init__` argument do not affect
-        the returned instance.
-        """
-        # Now, imagine that the program has just been launched. Since there's no
-        # Singleton instance yet, multiple threads can simultaneously pass the
-        # previous conditional and reach this point almost at the same time. The
-        # first of them will acquire lock and will proceed further, while the
-        # rest will wait here.
-        with cls._lock:
-            # The first thread to acquire the lock, reaches this conditional,
-            # goes inside and creates the Singleton instance. Once it leaves the
-            # lock block, a thread that might have been waiting for the lock
-            # release may then enter this section. But since the Singleton field
-            # is already initialized, the thread won't create a new object.
-            if cls not in cls._instances:
-                instance = super().__call__(*args, **kwargs)
-                cls._instances[cls] = instance
-        return cls._instances[cls]
+        Initialize the Auth0Service with user-specific credentials.
 
-class Auth0Service(metaclass=SingletonMeta):
-    def __init__(self, base_url, client_id, client_secret):
-        self.base_url = base_url
+        Args:
+            auth0_base_url (str): The base URL of the Auth0 tenant (e.g., 'your-domain.auth0.com').
+            client_id (str): The client ID for Auth0 Machine-to-Machine application.
+            client_secret (str): The client secret for Auth0 Machine-to-Machine application.
+            slack_user_id (str): The Slack user ID associated with these credentials.
+            access_token (str, optional): The current access token. Defaults to None.
+            token_expires_at (str, optional): The token expiry time in ISO format. Defaults to None.
+        """
+        self.auth0_base_url = auth0_base_url
         self.client_id = client_id
         self.client_secret = client_secret
-        self.access_token = None
-    
-    def get_management_api_token(self):
-        """
-        Uses client ID and secret to make a client credentials flow call to get a Management API token
-        Returns token from existing instance if not expired and it exists
-        """
-        if self.access_token and not self.is_token_expired(self.access_token):
-            return self.access_token
-        else:
-            # Token is expired or doesn't exist; request a new one
-            url = f"https://{self.base_url}/oauth/token"
-            payload = {
-                "client_id": self.client_id,
-                "client_secret": self.client_secret,
-                "audience": f"https://{self.base_url}/api/v2/",
-                "grant_type": "client_credentials"
-            }
-            response = requests.post(url, json=payload)
-            response.raise_for_status()  # Will raise an exception for 4xx/5xx responses
-            
-            self.access_token = response.json()["access_token"]
-            return self.access_token
+        self.slack_user_id = slack_user_id
+        self.access_token = access_token
+        self.token_expires_at = token_expires_at
 
-    def is_token_expired(self, token):
+    def get_access_token(self) -> str:
         """
-        Decodes payload of token and checks `exp` claim to see if token is expired
+        Retrieve a valid access token, refreshing it if necessary.
+
+        Returns:
+            str: The valid access token.
+
+        Raises:
+            Exception: If unable to retrieve a valid access token.
         """
         try:
-            # Decode the token without verification to extract the payload
-            # Set options={'verify_signature': False} to skip signature verification
-            unverified_payload = jwt.decode(token, options={"verify_signature": False})
-            # Extract the 'exp' claim
-            exp_timestamp = unverified_payload.get('exp')
-            if exp_timestamp is None:
-                return True
-            
-            # Get the current UNIX timestamp
-            current_timestamp = int(time.time())
+            if self.access_token and self.token_expires_at:
+                expires_at = datetime.fromisoformat(self.token_expires_at)
+                if datetime.utcnow() < expires_at:
+                    logger.debug(
+                        "Using cached access token for user %s", self.slack_user_id
+                    )
+                    return self.access_token  # Token is still valid
 
-            return current_timestamp >= exp_timestamp
-
-        except jwt.DecodeError:
-            return True
+            # Token is missing or expired; request a new one
+            logger.info(
+                "Access token expired or missing for user %s. Requesting new token.",
+                self.slack_user_id,
+            )
+            token_data = self.request_new_access_token()
+            return token_data["access_token"]
         except Exception as e:
-            return True
-    
-    def get(self, endpoint_path, query_params=None):
+            logger.exception(
+                "Failed to get access token for user %s: %s",
+                self.slack_user_id,
+                str(e),
+            )
+            raise
+
+    def request_new_access_token(self) -> dict:
         """
-        Boilerplate method to make GET Management API requests
+        Request a new access token from Auth0 and update the stored token.
+
+        Returns:
+            dict: The token data including access token and expiry.
+
+        Raises:
+            Exception: If unable to obtain a new access token.
         """
-        token = self.get_management_api_token()
-        headers = {
-            "Authorization": f"Bearer {token}"
-        }
-        url = f"https://{self.base_url}/api/v2/{endpoint_path}"
-        response = requests.get(url, headers=headers, params=query_params)
-        print(response)
-        response.raise_for_status()
-        return response.json()
+        try:
+            url = AUTH0_TOKEN_URL_TEMPLATE.format(
+                auth0_base_url=self.auth0_base_url
+            )
+            audience = AUTH0_API_AUDIENCE_TEMPLATE.format(
+                auth0_base_url=self.auth0_base_url
+            )
+            payload = {
+                "grant_type": "client_credentials",
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+                "audience": audience,
+            }
+            logger.debug(
+                "Requesting new access token from %s for user %s",
+                url,
+                self.slack_user_id,
+            )
+            response = requests.post(url, json=payload)
+            response.raise_for_status()
+            token_data = response.json()
+            # Update the access token and expiry
+            expires_in = token_data["expires_in"]
+            self.access_token = token_data["access_token"]
+            self.token_expires_at = (
+                datetime.utcnow() + timedelta(seconds=expires_in)
+            ).isoformat()
+
+            # Update in MongoDB
+            m2m_credentials_dao.update_access_token(
+                self.slack_user_id, self.access_token, expires_in
+            )
+
+            logger.info(
+                "New access token obtained and stored for user %s",
+                self.slack_user_id,
+            )
+            return token_data
+        except requests.exceptions.RequestException as e:
+            logger.exception(
+                "HTTP error occurred while requesting new access token for user %s: %s",
+                self.slack_user_id,
+                str(e),
+            )
+            raise
+        except Exception as e:
+            logger.exception(
+                "An error occurred while requesting new access token for user %s: %s",
+                self.slack_user_id,
+                str(e),
+            )
+            raise
+
+    def get(self, endpoint: str, query_params: dict = None) -> dict:
+        """
+        Make a GET request to the Auth0 Management API.
+
+        Args:
+            endpoint (str): The API endpoint to call (e.g., 'users', 'tenants/settings').
+            query_params (dict, optional): Query parameters for the request.
+
+        Returns:
+            dict: The JSON response from the API.
+
+        Raises:
+            Exception: If the GET request fails.
+        """
+        try:
+            # Ensure we have a valid access token
+            token = self.get_access_token()
+            headers = {
+                "Authorization": AUTHORIZATION_HEADER_TEMPLATE.format(token=token)
+            }
+            url = AUTH0_API_BASE_URL_TEMPLATE.format(
+                auth0_base_url=self.auth0_base_url, endpoint=endpoint
+            )
+            logger.debug(
+                "Making GET request to %s for user %s", url, self.slack_user_id
+            )
+            response = requests.get(url, headers=headers, params=query_params)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.exception(
+                "HTTP error occurred during GET request to %s: %s", url, str(e)
+            )
+            raise
+        except Exception as e:
+            logger.exception(
+                "An error occurred during GET request to %s: %s", url, str(e)
+            )
+            raise

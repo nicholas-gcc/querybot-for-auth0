@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pymongo
+python-dotenv
+requests
+slack_bolt
+slack_sdk
+google-cloud-dialogflow
+protobuf
+cssutils
+beautifulsoup4
