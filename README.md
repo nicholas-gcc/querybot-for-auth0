@@ -34,7 +34,7 @@ curl -L 'https://<YOUR_TENANT_DOMAIN>.<REGION>.auth0.com/api/v2/tenants/settings
 
 - Support for a slash command `/help` to display user instructions
 
-- (IN FUTURE) Support for a slash command `/authorize` to render a modal where users can input Auth0 domain and client credentials to perform client credentials calls and dynamically configure their tenant configs
+- Support for a slash command `/authorize` to render a modal where users can input Auth0 domain and client credentials to perform client credentials calls and dynamically configure their tenant configs
 
 ### Supported queries
 - **Get User Details By ID** (Retrieve user details given an Auth0 user ID)
@@ -76,13 +76,10 @@ This is a work in progress :)
 
 ## Technical Architecture
 
-![image](https://github.com/user-attachments/assets/e97471d2-65b1-4a26-8349-c7e91804e3b4)
+<img width="820" alt="image" src="https://github.com/user-attachments/assets/093d0ef8-3d95-4411-b478-fd542ae52b15">
+
 
 ## Roadmap
-
-- Set up the slash command `/authorize` on Slack to enable users to change tenants / M2M apps performing client credentials calls on the fly. Currently, this operates off environmental variables on a `.env` file
-  
-- Add persistent storage to map users to a current instance of Auth0 configs to support multiple users
   
 - Deploy API a more robust platform (e.g. Docker, AWS Lambda)
 
